@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\crudModel;
+use App\Models\loginModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -10,13 +11,13 @@ class crud extends Controller
 {
     public function index(){
         $modelCrud = new crudModel;
-        $data['items'] = $modelCrud -> get();
+        $data['items'] = $modelCrud  -> get();
         return view('index',$data);
     }
 
     public function all(){
         $modelCrud = new crudModel;
-        $data = $modelCrud -> get();
+        $data = $modelCrud -> where('user',session('id')) -> get();
         return response()->json($data);
     }
     public function save(Request $request){
@@ -32,7 +33,7 @@ class crud extends Controller
         $validated = $validator->validated();
         
         $task = $validated['task'];
-        $inserted = $taskModel->insertGetId(['task'=>$task]);
+        $inserted = $taskModel->insertGetId(['task' => $task,'user' => session('id')]);
         if($inserted){
             $res = ['success' => true, 'message' => 'Task Added Successfully', 'id' => $inserted];
             return response()->json($res); exit;
@@ -79,7 +80,7 @@ class crud extends Controller
 
     public function getTrash(){
         $modelCrud = new crudModel;
-        $items = $modelCrud -> onlyTrashed()-> get();
+        $items = $modelCrud -> onlyTrashed()->where('user',session('id')) -> get();
         // dd($data);
         return response()->json($items);
         // return view('index',$data);
@@ -87,14 +88,14 @@ class crud extends Controller
 
     public function completed(){
         $modelCrud = new crudModel;
-        $data = $modelCrud -> where('status',1)-> get();
+        $data = $modelCrud -> where('status',1)->where('user',session('id')) -> get();
         // dd($data);
         return response()->json($data);
     }
 
     public function incomplete(){
         $modelCrud = new crudModel;
-        $data = $modelCrud ->where('status',0)-> get();
+        $data = $modelCrud ->where('status',0) -> where('user',session('id')) -> get();
         return response()->json($data);
     }
 
@@ -110,4 +111,80 @@ class crud extends Controller
         $res = ['success' => true, 'message' => 'Task status Changed'];
         return response()->json($res);
     }
+
+    public function login(){
+        return view('login');
+    }
+
+    public function register(){
+        return view('register');
+    }
+
+    public function auth(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'password'  => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $res = ['success' => FALSE, 'message' => $validator->errors()];
+            return response()->json($res); exit;
+        }
+        $validated = $validator->validated();
+        
+        $email = $validated['email'];
+        $pwd  = $validated['password'];
+
+            $check = loginModel::where('email', $email)
+                      ->where('password', md5($pwd))
+                      ->first();
+            if (isset($check->id)):
+               
+                $request->session()->put('id', $check->id);
+                $request->session()->put('email', $check->email);
+                $res = ['success' => TRUE, 'message' => 'Login successfully', 'url' => url('/')];
+            else:
+                $res = ['success' => FALSE, 'message' => 'Enter a valid User name or password.!'];
+            endif;
+        return response()->json($res);
+    }
+
+    public function LogOut(Request $request)
+    {
+        $request->session()->forget('id');
+        $request->session()->forget('email');
+        $request->session()->flush();
+        return redirect('/');
+    }
+
+    public function reg(Request $request)
+    {
+        $validator = Validator::make($request->all(), 
+        [
+         'email'  => 'required|email|unique:login,email',
+         'password'  =>'required|min:6',
+         'confirm_password' => 'required_with:password|same:password|min:6'
+        ]);
+
+        if ($validator->fails()) {
+            $res = ['success' => FALSE, 'message' => $validator->errors()];
+            return response()->json($res); exit;
+        }
+        
+        $validated = $validator->validated();
+        if ($validated):
+            $data=[
+                   'email'=>$request->email,
+                   'password'=>md5($request->password),
+                   'created_at' => now()];
+            if (LoginModel::insert($data)):
+                $res = ['success' => TRUE, 'message' => 'User added successfully', 'url' => url('/')];
+            else:
+                $res = ['success' => FALSE, 'message' => 'User not added.!'];
+            endif;
+            return response()->json($res);
+        endif;
+    }
+
 }

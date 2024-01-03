@@ -19,7 +19,7 @@
         <div class="container">
             <div class="todo-app">
                 <div class="app-title">
-                    <h2>Laravel Practice app</h2>
+                    <h2>Laravel Practice app <a href="{{url('logout')}}">Logout</a></h2>
                     <i class="fa-solid fa-book-bookmark"></i>
                 </div>
                 <div class="row">
