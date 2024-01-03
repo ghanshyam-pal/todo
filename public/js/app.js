@@ -34,6 +34,7 @@
               inputBox.val('');
               let span = $("<span data-id='"+ res.id +"' data-controller='delete'></span>").html("x");
               li.append(span);
+              li.append('<span class="edit">E </span>');
             } else if (res.success == false && typeof res.message != 'object') {
                 Toast.fire({ icon: 'warning', title: res.message });
             } else {
