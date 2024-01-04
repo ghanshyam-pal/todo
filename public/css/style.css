@@ -155,3 +155,12 @@ p{
     font-size: 18px;
     transition: all .2s ease;
 }
+
+a{
+    text-align: center;
+  width: 76px;
+  border: 2px solid red;
+  border-radius: 10px;
+  color: red;
+  text-decoration: none;
+}

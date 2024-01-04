@@ -41,6 +41,7 @@
       
                   if (response.success) {
 					Toast.fire({ icon: 'success', title: response.message });
+          console.log(response.url);
 					setTimeout(function() { window.parent.location.href = response.url; }, 2000);
                   } else {
                       if (response) {
@@ -145,6 +146,7 @@
 
 	  //call the addtask on button click
       button.on("click", addTask);
+      $("body").on("submit",  addTask);
 
 
 	//   function used to get data of different sections like all completed incompleted and trash
