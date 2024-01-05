@@ -23,7 +23,7 @@
 
 
 // used to submit form
-      $("body").on("submit", "#submit-form", function(e) {
+      $("body").on("submit", ".submit-form", function(e) {
         e.preventDefault(); // prevent the default form submission
         $('.error-message').remove();
     
@@ -36,13 +36,14 @@
               data: formData,
               processData: false,  // Don't process the data
               contentType: false,  // Don't set contentType
-              success: function(res) {
-                  var response = $.parseJSON(res);
+              success: function(response) {
+                  // var response = $.parseJSON(res);
       
                   if (response.success) {
-					Toast.fire({ icon: 'success', title: response.message });
-          console.log(response.url);
-					setTimeout(function() { window.parent.location.href = response.url; }, 2000);
+                    console.log("sadas");
+                    Toast.fire({ icon: 'success', title: response.message });
+                    console.log(response.url);
+                    setTimeout(function() { window.parent.location.href = response.url; }, 2000);
                   } else {
                       if (response) {
                           for (var key in response) {
@@ -56,6 +57,7 @@
                   }
               }
           });
+          return false;
       });
 
 
@@ -145,8 +147,8 @@
 
 
 	  //call the addtask on button click
-      button.on("click", addTask);
-      $("body").on("submit",  addTask);
+      $('#add').on("click", addTask);
+      $(".add-task-form").on("submit",  addTask);
 
 
 	//   function used to get data of different sections like all completed incompleted and trash

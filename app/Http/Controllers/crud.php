@@ -179,7 +179,8 @@ class crud extends Controller
                    'password'=>md5($request->password),
                    'created_at' => now()];
             if (LoginModel::insert($data)):
-                $res = ['success' => TRUE, 'message' => 'User added successfully', 'url' => url('/')];
+                
+                $res = ['success' => TRUE, 'message' => 'User added successfully', 'url' => url('login')];
             else:
                 $res = ['success' => FALSE, 'message' => 'User not added.!'];
             endif;

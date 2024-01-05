@@ -30,11 +30,11 @@
                     <p>Trash</p>
                 </div>
                 <div class="row">
-                    <form action="{{url('save')}}" method="post">
+                    <form action="{{url('save')}}" class="add-task-form" method="post">
                         @csrf
                         <input type="text" id="input-box" name="task" placeholder="add your tasks">
                     </form>
-                    <button>Add</button>
+                    <button id="add">Add</button>
                 </div>
                 <ul id="list-container">
                    
